@@ -1,0 +1,13 @@
+{
+	"group": "SELECT",
+	"name": "p50",
+	"description": "quantile(0.50)",
+	"sql": "quantile(0.50)({col})",
+	"vars": {
+		"col": {
+			"select": "column",
+			"type": "number",
+			"description": "number, e.g. a duration"
+		}
+	}
+}

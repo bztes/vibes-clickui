@@ -1,0 +1,15 @@
+{
+	"group": "ClickHouse",
+	"name": "Tables list",
+	"panel": {
+		"type": "table",
+		"title": "Tables list",
+		"gridPos": {
+			"x": 0,
+			"y": 0,
+			"w": 12,
+			"h": 9
+		},
+		"sql": "SELECT concat(database, '.', table) AS table, sum(rows) AS rows,\n  formatReadableSize(sum(data_compressed_bytes)) AS compressed,\n  round(sum(data_uncompressed_bytes) / greatest(sum(data_compressed_bytes), 1), 1) AS ratio\nFROM system.parts\nWHERE active AND database NOT IN ('system', 'INFORMATION_SCHEMA', 'information_schema')\nGROUP BY database, table ORDER BY sum(data_compressed_bytes) DESC LIMIT 10"
+	}
+}

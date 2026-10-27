@@ -1,0 +1,27 @@
+{
+	"group": "OTel Collector",
+	"name": "Logs count",
+	"panel": {
+		"type": ["stat", "table"],
+		"title": "Logs count",
+		"gridPos": {
+			"x": 0,
+			"y": 0,
+			"w": 6,
+			"h": 4
+		},
+		"sql": "SELECT $__timeInterval(Timestamp) AS time, count() AS logs\nFROM otel_logs\nWHERE $__timeFilter(Timestamp)\nGROUP BY time ORDER BY time",
+		"field": {
+			"unit": "short",
+			"thresholds": [
+				{
+					"value": null,
+					"color": "blue"
+				}
+			]
+		},
+		"options": {
+			"reduce": "sum"
+		}
+	}
+}

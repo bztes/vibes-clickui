@@ -1,0 +1,11 @@
+{
+	"group": "SELECT",
+	"name": "anyLast",
+	"sql": "anyLast({col})",
+	"vars": {
+		"col": {
+			"select": "column",
+			"description": "value of the last row seen"
+		}
+	}
+}

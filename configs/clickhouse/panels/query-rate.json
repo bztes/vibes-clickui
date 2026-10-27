@@ -1,0 +1,21 @@
+{
+	"group": "ClickHouse",
+	"name": "Query rate",
+	"panel": {
+		"type": ["timeseries", "bar", "table"],
+		"title": "Query rate",
+		"gridPos": {
+			"x": 0,
+			"y": 0,
+			"w": 12,
+			"h": 8
+		},
+		"sql": "SELECT $__timeInterval(event_time) AS time,\n  if(type = 'QueryFinish', 'succeeded', 'failed') AS status,\n  count() / $__interval_s AS rate\nFROM system.query_log\nWHERE type != 'QueryStart' AND $__timeFilter(event_time)\nGROUP BY time, status ORDER BY time",
+		"field": {
+			"unit": "ops"
+		},
+		"options": {
+			"colorBy": "status"
+		}
+	}
+}

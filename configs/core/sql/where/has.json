@@ -1,0 +1,18 @@
+{
+	"group": "WHERE",
+	"name": "has",
+	"description": "array contains",
+	"sql": "has({col}, {value})",
+	"vars": {
+		"col": {
+			"select": "column",
+			"type": "array",
+			"description": "array to look in"
+		},
+		"value": {
+			"select": "value",
+			"use": "col",
+			"description": "element it has to contain"
+		}
+	}
+}

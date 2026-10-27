@@ -1,0 +1,6 @@
+{
+	"group": "Macro",
+	"name": "$__to",
+	"description": "range end in epoch ms",
+	"sql": "$__to"
+}

@@ -1,0 +1,18 @@
+{
+	"group": "WHERE",
+	"name": "contains",
+	"description": "case-insensitive",
+	"sql": "positionCaseInsensitiveUTF8({col}, {value}) > 0",
+	"vars": {
+		"col": {
+			"select": "column",
+			"type": "string",
+			"description": "text to search in"
+		},
+		"value": {
+			"select": "value",
+			"use": "col",
+			"description": "text to find, any case"
+		}
+	}
+}

@@ -1,0 +1,12 @@
+{
+	"group": "SELECT",
+	"name": "groupArrayArray",
+	"sql": "groupArrayArray({col})",
+	"vars": {
+		"col": {
+			"select": "column",
+			"type": "array",
+			"description": "arrays merged into one"
+		}
+	}
+}

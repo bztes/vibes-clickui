@@ -1,0 +1,25 @@
+{
+	"group": "ClickHouse",
+	"name": "Rows count",
+	"panel": {
+		"type": "stat",
+		"title": "Rows count",
+		"description": "Active parts outside the system databases, independent of the time range",
+		"gridPos": {
+			"x": 0,
+			"y": 0,
+			"w": 6,
+			"h": 4
+		},
+		"sql": "SELECT sum(rows) AS rows\nFROM system.parts\nWHERE active AND database NOT IN ('system', 'INFORMATION_SCHEMA', 'information_schema')",
+		"field": {
+			"unit": "short",
+			"thresholds": [
+				{
+					"value": null,
+					"color": "blue"
+				}
+			]
+		}
+	}
+}

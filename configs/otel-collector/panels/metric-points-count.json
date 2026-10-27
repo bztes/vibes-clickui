@@ -1,0 +1,27 @@
+{
+	"group": "OTel Collector",
+	"name": "Metric points count",
+	"panel": {
+		"type": ["stat", "table"],
+		"title": "Metric points count",
+		"gridPos": {
+			"x": 0,
+			"y": 0,
+			"w": 6,
+			"h": 4
+		},
+		"sql": "SELECT $__timeInterval(TimeUnix) AS time, count() AS points\nFROM (\n  SELECT TimeUnix FROM otel_metrics_gauge WHERE $__timeFilter(TimeUnix)\n  UNION ALL SELECT TimeUnix FROM otel_metrics_sum WHERE $__timeFilter(TimeUnix)\n  UNION ALL SELECT TimeUnix FROM otel_metrics_histogram WHERE $__timeFilter(TimeUnix)\n)\nGROUP BY time ORDER BY time",
+		"field": {
+			"unit": "short",
+			"thresholds": [
+				{
+					"value": null,
+					"color": "blue"
+				}
+			]
+		},
+		"options": {
+			"reduce": "sum"
+		}
+	}
+}

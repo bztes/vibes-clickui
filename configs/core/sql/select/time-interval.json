@@ -1,0 +1,13 @@
+{
+	"group": "SELECT",
+	"name": "$__timeInterval",
+	"description": "bucket by interval",
+	"sql": "$__timeInterval({col}) AS time",
+	"vars": {
+		"col": {
+			"select": "column",
+			"type": "time",
+			"description": "time column rounded to the interval"
+		}
+	}
+}

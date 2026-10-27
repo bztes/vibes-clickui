@@ -1,0 +1,13 @@
+{
+	"group": "SELECT",
+	"name": "arrayJoin",
+	"description": "a row per element",
+	"sql": "arrayJoin({col})",
+	"vars": {
+		"col": {
+			"select": "column",
+			"type": "array",
+			"description": "array unfolded into one row per element"
+		}
+	}
+}

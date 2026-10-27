@@ -1,0 +1,17 @@
+{
+	"group": "WHERE",
+	"name": "IN",
+	"sql": "{col} IN ({values})",
+	"vars": {
+		"col": {
+			"select": "column",
+			"description": "column to compare"
+		},
+		"values": {
+			"select": "value",
+			"use": "col",
+			"multiple": true,
+			"description": "values it may be"
+		}
+	}
+}

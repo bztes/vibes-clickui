@@ -1,0 +1,13 @@
+{
+	"group": "Macro",
+	"name": "$__timeInterval(col)",
+	"description": "bucket col by interval",
+	"sql": "$__timeInterval({col})",
+	"vars": {
+		"col": {
+			"select": "column",
+			"type": "time",
+			"description": "time column rounded to the interval"
+		}
+	}
+}

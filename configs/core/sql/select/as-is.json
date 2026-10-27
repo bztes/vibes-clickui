@@ -1,0 +1,11 @@
+{
+	"group": "SELECT",
+	"name": "as is",
+	"sql": "{col}",
+	"vars": {
+		"col": {
+			"select": "column",
+			"description": "column to return"
+		}
+	}
+}

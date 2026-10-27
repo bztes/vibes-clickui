@@ -1,0 +1,31 @@
+{
+	"group": "ClickHouse",
+	"name": "Queries failed count",
+	"panel": {
+		"type": ["stat", "table"],
+		"title": "Queries failed count",
+		"gridPos": {
+			"x": 0,
+			"y": 0,
+			"w": 6,
+			"h": 4
+		},
+		"sql": "SELECT $__timeInterval(event_time) AS time,\n  countIf(type IN ('ExceptionBeforeStart', 'ExceptionWhileProcessing')) AS failed\nFROM system.query_log\nWHERE $__timeFilter(event_time)\nGROUP BY time ORDER BY time",
+		"field": {
+			"unit": "short",
+			"thresholds": [
+				{
+					"value": null,
+					"color": "good"
+				},
+				{
+					"value": 1,
+					"color": "critical"
+				}
+			]
+		},
+		"options": {
+			"reduce": "sum"
+		}
+	}
+}

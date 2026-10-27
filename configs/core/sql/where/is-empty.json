@@ -1,0 +1,12 @@
+{
+	"group": "WHERE",
+	"name": "is empty",
+	"sql": "{col} = ''",
+	"vars": {
+		"col": {
+			"select": "column",
+			"type": "string",
+			"description": "text that has to be empty"
+		}
+	}
+}

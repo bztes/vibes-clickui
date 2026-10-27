@@ -1,0 +1,13 @@
+{
+	"group": "WHERE",
+	"name": "not empty",
+	"description": "array",
+	"sql": "notEmpty({col})",
+	"vars": {
+		"col": {
+			"select": "column",
+			"type": "array",
+			"description": "array that needs an element"
+		}
+	}
+}

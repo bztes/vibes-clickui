@@ -1,0 +1,11 @@
+{
+	"group": "ORDER BY",
+	"name": "ASC",
+	"sql": "{col} ASC",
+	"vars": {
+		"col": {
+			"select": "column",
+			"description": "column to sort by, smallest first"
+		}
+	}
+}

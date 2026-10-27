@@ -1,0 +1,13 @@
+{
+	"group": "Value",
+	"name": "values",
+	"description": "of a column, quoted",
+	"sql": "{values}",
+	"vars": {
+		"values": {
+			"select": "value",
+			"multiple": true,
+			"description": "values to insert, quoted for their type"
+		}
+	}
+}

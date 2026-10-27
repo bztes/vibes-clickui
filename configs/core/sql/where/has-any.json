@@ -1,0 +1,18 @@
+{
+	"group": "WHERE",
+	"name": "has any",
+	"sql": "hasAny({col}, [{values}])",
+	"vars": {
+		"col": {
+			"select": "column",
+			"type": "array",
+			"description": "array to look in"
+		},
+		"values": {
+			"select": "value",
+			"use": "col",
+			"multiple": true,
+			"description": "any one of them has to be in it"
+		}
+	}
+}

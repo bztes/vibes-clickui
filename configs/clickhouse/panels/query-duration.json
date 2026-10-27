@@ -1,0 +1,18 @@
+{
+	"group": "ClickHouse",
+	"name": "Query duration",
+	"panel": {
+		"type": ["timeseries", "bar", "table"],
+		"title": "Query duration",
+		"gridPos": {
+			"x": 0,
+			"y": 0,
+			"w": 12,
+			"h": 8
+		},
+		"sql": "SELECT $__timeInterval(event_time) AS time,\n  quantile(0.5)(query_duration_ms) AS p50,\n  quantile(0.95)(query_duration_ms) AS p95,\n  quantile(0.99)(query_duration_ms) AS p99\nFROM system.query_log\nWHERE type = 'QueryFinish' AND $__timeFilter(event_time)\nGROUP BY time ORDER BY time",
+		"field": {
+			"unit": "ms"
+		}
+	}
+}

@@ -1,0 +1,12 @@
+{
+	"group": "WHERE",
+	"name": "IS NOT NULL",
+	"sql": "{col} IS NOT NULL",
+	"vars": {
+		"col": {
+			"select": "column",
+			"type": "nullable",
+			"description": "column that has to be set"
+		}
+	}
+}

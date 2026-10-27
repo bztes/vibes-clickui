@@ -1,0 +1,205 @@
+{
+	"title": "Infrastructure",
+	"description": "Host metrics from the collector and process metrics per service.",
+	"tags": ["metrics", "host"],
+	"model": {
+		"time": {
+			"from": "now-1h",
+			"to": "now"
+		},
+		"refresh": "30s",
+		"variables": [],
+		"panels": [
+			{
+				"id": "cpu-busy",
+				"type": "gauge",
+				"title": "Host CPU busy",
+				"gridPos": {
+					"x": 0,
+					"y": 0,
+					"w": 6,
+					"h": 7
+				},
+				"sql": "SELECT $__timeInterval(TimeUnix) AS time, 1 - avgIf(Value, Attributes['state'] = 'idle') AS busy\nFROM otel_metrics_gauge\nWHERE MetricName = 'system.cpu.utilization' AND $__timeFilter(TimeUnix)\nGROUP BY time ORDER BY time",
+				"description": "Average of all non-idle CPU states",
+				"field": {
+					"unit": "percentunit",
+					"min": 0,
+					"max": 1,
+					"thresholds": [
+						{
+							"value": null,
+							"color": "good"
+						},
+						{
+							"value": 0.7,
+							"color": "warning"
+						},
+						{
+							"value": 0.9,
+							"color": "critical"
+						}
+					]
+				},
+				"options": {
+					"reduce": "last"
+				}
+			},
+			{
+				"id": "cpu",
+				"type": "timeseries",
+				"title": "Host CPU by state",
+				"gridPos": {
+					"x": 6,
+					"y": 0,
+					"w": 18,
+					"h": 7
+				},
+				"sql": "SELECT $__timeInterval(TimeUnix) AS time, Attributes['state'] AS state,\n  avg(Value) AS utilization\nFROM otel_metrics_gauge\nWHERE MetricName = 'system.cpu.utilization' AND Attributes['state'] != 'idle' AND $__timeFilter(TimeUnix)\nGROUP BY time, state ORDER BY time",
+				"field": {
+					"unit": "percentunit"
+				},
+				"options": {
+					"stacking": true,
+					"fillOpacity": 60,
+					"colorBy": "state"
+				}
+			},
+			{
+				"id": "memory-used",
+				"type": "stat",
+				"title": "Host memory used",
+				"gridPos": {
+					"x": 0,
+					"y": 7,
+					"w": 6,
+					"h": 7
+				},
+				"sql": "SELECT $__timeInterval(TimeUnix) AS time, avg(Value) AS used\nFROM otel_metrics_gauge\nWHERE MetricName = 'system.memory.utilization' AND Attributes['state'] = 'used' AND $__timeFilter(TimeUnix)\nGROUP BY time ORDER BY time",
+				"field": {
+					"unit": "percentunit",
+					"thresholds": [
+						{
+							"value": null,
+							"color": "good"
+						},
+						{
+							"value": 0.8,
+							"color": "warning"
+						},
+						{
+							"value": 0.95,
+							"color": "critical"
+						}
+					]
+				},
+				"options": {
+					"reduce": "last"
+				}
+			},
+			{
+				"id": "load",
+				"type": "timeseries",
+				"title": "Load average",
+				"gridPos": {
+					"x": 6,
+					"y": 7,
+					"w": 9,
+					"h": 7
+				},
+				"sql": "SELECT $__timeInterval(TimeUnix) AS time, replaceOne(MetricName, 'system.cpu.load_average.', '') AS window, avg(Value) AS load\nFROM otel_metrics_gauge\nWHERE MetricName LIKE 'system.cpu.load_average.%' AND $__timeFilter(TimeUnix)\nGROUP BY time, window ORDER BY time",
+				"field": {
+					"unit": "short"
+				},
+				"options": {
+					"colorBy": "window"
+				}
+			},
+			{
+				"id": "network",
+				"type": "timeseries",
+				"title": "Network throughput",
+				"gridPos": {
+					"x": 15,
+					"y": 7,
+					"w": 9,
+					"h": 7
+				},
+				"description": "Rate computed from the cumulative system.network.io counter",
+				"sql": "SELECT time, direction, (v - prev) / $__interval_s AS bytes_per_second\nFROM (\n  SELECT time, direction, v,\n    lagInFrame(v, 1, v) OVER (PARTITION BY direction ORDER BY time ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) AS prev\n  FROM (\n    SELECT time, direction, sum(v) AS v FROM (\n      SELECT $__timeInterval(TimeUnix) AS time, Attributes['device'] AS device,\n        Attributes['direction'] AS direction, max(Value) AS v\n      FROM otel_metrics_sum\n      WHERE MetricName = 'system.network.io' AND $__timeFilter(TimeUnix)\n      GROUP BY time, device, direction\n    ) GROUP BY time, direction\n  )\n)\nWHERE v >= prev\nORDER BY time",
+				"field": {
+					"unit": "bytes"
+				},
+				"options": {
+					"colorBy": "direction"
+				}
+			},
+			{
+				"id": "process-memory",
+				"type": "timeseries",
+				"title": "Process memory by service",
+				"gridPos": {
+					"x": 0,
+					"y": 14,
+					"w": 12,
+					"h": 8
+				},
+				"sql": "SELECT $__timeInterval(TimeUnix) AS time, ServiceName, avg(Value) AS memory\nFROM otel_metrics_gauge\nWHERE MetricName = 'process.memory.usage' AND $__timeFilter(TimeUnix)\nGROUP BY time, ServiceName ORDER BY time",
+				"field": {
+					"unit": "bytes"
+				},
+				"options": {
+					"colorBy": "ServiceName"
+				}
+			},
+			{
+				"id": "process-cpu",
+				"type": "timeseries",
+				"title": "Process CPU by service",
+				"gridPos": {
+					"x": 12,
+					"y": 14,
+					"w": 12,
+					"h": 8
+				},
+				"sql": "SELECT $__timeInterval(TimeUnix) AS time, ServiceName, avg(Value) AS cpu\nFROM otel_metrics_gauge\nWHERE MetricName = 'process.cpu.utilization' AND $__timeFilter(TimeUnix)\nGROUP BY time, ServiceName ORDER BY time",
+				"field": {
+					"unit": "percentunit"
+				},
+				"options": {
+					"colorBy": "ServiceName"
+				}
+			},
+			{
+				"id": "metric-inventory",
+				"type": "table",
+				"title": "Metric inventory",
+				"gridPos": {
+					"x": 0,
+					"y": 22,
+					"w": 14,
+					"h": 8
+				},
+				"sql": "SELECT * FROM (\n  SELECT MetricName AS metric, 'gauge' AS type, any(MetricUnit) AS unit, uniqExact(ServiceName) AS services, count() AS points\n  FROM otel_metrics_gauge WHERE $__timeFilter(TimeUnix) GROUP BY metric\n  UNION ALL\n  SELECT MetricName, 'sum', any(MetricUnit), uniqExact(ServiceName), count()\n  FROM otel_metrics_sum WHERE $__timeFilter(TimeUnix) GROUP BY MetricName\n  UNION ALL\n  SELECT MetricName, 'histogram', any(MetricUnit), uniqExact(ServiceName), count()\n  FROM otel_metrics_histogram WHERE $__timeFilter(TimeUnix) GROUP BY MetricName\n)\nORDER BY points DESC"
+			},
+			{
+				"id": "points-per-service",
+				"type": "pie",
+				"title": "Data points by service",
+				"gridPos": {
+					"x": 14,
+					"y": 22,
+					"w": 10,
+					"h": 8
+				},
+				"sql": "SELECT if(ServiceName = '', 'collector (host)', ServiceName) AS service, count() AS points\nFROM otel_metrics_gauge\nWHERE $__timeFilter(TimeUnix)\nGROUP BY service ORDER BY points DESC",
+				"field": {
+					"unit": "short"
+				},
+				"options": {
+					"colorBy": "service"
+				}
+			}
+		]
+	}
+}

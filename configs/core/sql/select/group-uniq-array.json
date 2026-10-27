@@ -1,0 +1,11 @@
+{
+	"group": "SELECT",
+	"name": "groupUniqArray",
+	"sql": "groupUniqArray({col})",
+	"vars": {
+		"col": {
+			"select": "column",
+			"description": "values collected without duplicates"
+		}
+	}
+}

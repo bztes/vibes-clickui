@@ -1,0 +1,12 @@
+{
+	"group": "SELECT",
+	"name": "length",
+	"description": "of a string, array or map",
+	"sql": "length({col})",
+	"vars": {
+		"col": {
+			"select": "column",
+			"description": "string or array to measure"
+		}
+	}
+}

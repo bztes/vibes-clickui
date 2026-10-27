@@ -1,0 +1,27 @@
+{
+	"group": "ClickHouse",
+	"name": "Queries count",
+	"panel": {
+		"type": ["stat", "table"],
+		"title": "Queries count",
+		"gridPos": {
+			"x": 0,
+			"y": 0,
+			"w": 6,
+			"h": 4
+		},
+		"sql": "SELECT $__timeInterval(event_time) AS time, countIf(type != 'QueryStart') AS queries\nFROM system.query_log\nWHERE $__timeFilter(event_time)\nGROUP BY time ORDER BY time",
+		"field": {
+			"unit": "short",
+			"thresholds": [
+				{
+					"value": null,
+					"color": "blue"
+				}
+			]
+		},
+		"options": {
+			"reduce": "sum"
+		}
+	}
+}

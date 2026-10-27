@@ -1,0 +1,18 @@
+{
+	"group": "WHERE",
+	"name": "key exists",
+	"description": "mapContains",
+	"sql": "mapContains({map}, {key})",
+	"vars": {
+		"map": {
+			"select": "column",
+			"type": "map",
+			"description": "map column, e.g. attributes"
+		},
+		"key": {
+			"select": "mapkey",
+			"use": "map",
+			"description": "key that has to be present"
+		}
+	}
+}

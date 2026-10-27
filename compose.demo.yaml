@@ -1,0 +1,17 @@
+name: vibes-clickui-demo
+
+services:
+  demo:
+    image: node:24-alpine
+    command: ['node', '/demo/generator.mjs']
+    environment:
+      OTLP_ENDPOINT: http://otel-collector:4318
+      OTLP_TOKEN: ${OTLP_TOKEN:?}
+      RATE: ${DEMO_RATE:?}
+    volumes:
+      - ./docker/demo:/demo:ro
+    restart: unless-stopped
+
+networks:
+  default:
+    name: vibes-clickui

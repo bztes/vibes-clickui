@@ -1,0 +1,12 @@
+{
+	"group": "SELECT",
+	"name": "sum",
+	"sql": "sum({col})",
+	"vars": {
+		"col": {
+			"select": "column",
+			"type": "number",
+			"description": "number to add up"
+		}
+	}
+}

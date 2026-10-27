@@ -1,0 +1,11 @@
+{
+	"group": "SELECT",
+	"name": "max",
+	"sql": "max({col})",
+	"vars": {
+		"col": {
+			"select": "column",
+			"description": "column to take the largest of"
+		}
+	}
+}

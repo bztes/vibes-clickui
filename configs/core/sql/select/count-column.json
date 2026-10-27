@@ -1,0 +1,12 @@
+{
+	"group": "SELECT",
+	"name": "count(column)",
+	"description": "non-NULL values",
+	"sql": "count({col})",
+	"vars": {
+		"col": {
+			"select": "column",
+			"description": "counts rows where it is not NULL"
+		}
+	}
+}

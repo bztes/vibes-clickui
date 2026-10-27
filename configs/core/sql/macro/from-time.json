@@ -1,0 +1,6 @@
+{
+	"group": "Macro",
+	"name": "$__fromTime",
+	"description": "range start as DateTime64",
+	"sql": "$__fromTime"
+}

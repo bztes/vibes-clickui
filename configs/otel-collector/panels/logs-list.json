@@ -1,0 +1,21 @@
+{
+	"group": "OTel Collector",
+	"name": "Logs list",
+	"description": "Newest log lines first",
+	"panel": {
+		"type": ["logs", "table"],
+		"title": "Logs list",
+		"gridPos": {
+			"x": 0,
+			"y": 0,
+			"w": 24,
+			"h": 10
+		},
+		"sql": "SELECT Timestamp, SeverityText, ServiceName, Body, TraceId, SpanId, LogAttributes\nFROM otel_logs\nWHERE $__timeFilter(Timestamp)\nORDER BY Timestamp DESC\nLIMIT 500",
+		"options": {
+			"levelColumn": "SeverityText",
+			"labelColumn": "ServiceName",
+			"messageColumn": "Body"
+		}
+	}
+}

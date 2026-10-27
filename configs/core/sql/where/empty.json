@@ -1,0 +1,13 @@
+{
+	"group": "WHERE",
+	"name": "empty",
+	"description": "array",
+	"sql": "empty({col})",
+	"vars": {
+		"col": {
+			"select": "column",
+			"type": "array",
+			"description": "array that has to be empty"
+		}
+	}
+}

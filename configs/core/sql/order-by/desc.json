@@ -1,0 +1,11 @@
+{
+	"group": "ORDER BY",
+	"name": "DESC",
+	"sql": "{col} DESC",
+	"vars": {
+		"col": {
+			"select": "column",
+			"description": "column to sort by, largest first"
+		}
+	}
+}

@@ -1,0 +1,11 @@
+{
+	"group": "FROM",
+	"name": "table",
+	"sql": "{table}",
+	"vars": {
+		"table": {
+			"select": "table",
+			"description": "table to read from"
+		}
+	}
+}

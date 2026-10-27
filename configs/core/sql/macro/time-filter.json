@@ -1,0 +1,13 @@
+{
+	"group": "Macro",
+	"name": "$__timeFilter(col)",
+	"description": "col within the time range",
+	"sql": "$__timeFilter({col})",
+	"vars": {
+		"col": {
+			"select": "column",
+			"type": "time",
+			"description": "time column limited to the dashboard range"
+		}
+	}
+}

@@ -1,0 +1,19 @@
+{
+	"group": "OTel Collector",
+	"name": "Gauge metric",
+	"description": "The gauge metric with the most data points, one series per service and attributes; set MetricName to pin one",
+	"panel": {
+		"type": ["timeseries", "bar", "table"],
+		"title": "Gauge metric",
+		"gridPos": {
+			"x": 0,
+			"y": 0,
+			"w": 12,
+			"h": 8
+		},
+		"sql": "SELECT $__timeInterval(TimeUnix) AS time,\n  trim(concat(ServiceName, ' ', arrayStringConcat(mapValues(Attributes), ' '))) AS series,\n  avg(Value) AS value\nFROM otel_metrics_gauge\nWHERE MetricName = (\n  SELECT MetricName FROM otel_metrics_gauge\n  WHERE $__timeFilter(TimeUnix)\n  GROUP BY MetricName ORDER BY count() DESC LIMIT 1\n) AND $__timeFilter(TimeUnix)\nGROUP BY time, series ORDER BY time",
+		"options": {
+			"colorBy": "series"
+		}
+	}
+}

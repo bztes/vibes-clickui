@@ -1,0 +1,17 @@
+{
+	"group": "WHERE",
+	"name": "NOT LIKE",
+	"sql": "{col} NOT LIKE {value}",
+	"vars": {
+		"col": {
+			"select": "column",
+			"type": "string",
+			"description": "text to match"
+		},
+		"value": {
+			"select": "value",
+			"use": "col",
+			"description": "pattern, % for any text, _ for one character"
+		}
+	}
+}

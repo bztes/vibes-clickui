@@ -1,0 +1,21 @@
+<clickhouse>
+	<profiles>
+		<!-- readonly=2: SELECTs only, but the client may still adjust query settings -->
+		<vibes_clickui_readonly>
+			<readonly>2</readonly>
+			<max_execution_time>60</max_execution_time>
+			<max_result_rows>100000</max_result_rows>
+			<result_overflow_mode>break</result_overflow_mode>
+		</vibes_clickui_readonly>
+	</profiles>
+	<users>
+		<vibes-clickui>
+			<password from_env="CLICKHOUSE_UI_PASSWORD" />
+			<profile>vibes_clickui_readonly</profile>
+			<quota>default</quota>
+			<networks>
+				<ip>::/0</ip>
+			</networks>
+		</vibes-clickui>
+	</users>
+</clickhouse>

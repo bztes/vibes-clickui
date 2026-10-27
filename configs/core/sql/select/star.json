@@ -1,0 +1,6 @@
+{
+	"group": "SELECT",
+	"name": "*",
+	"description": "all columns",
+	"sql": "*"
+}

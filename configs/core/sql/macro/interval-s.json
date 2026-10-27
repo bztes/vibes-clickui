@@ -1,0 +1,6 @@
+{
+	"group": "Macro",
+	"name": "$__interval_s",
+	"description": "bucket size in seconds",
+	"sql": "$__interval_s"
+}

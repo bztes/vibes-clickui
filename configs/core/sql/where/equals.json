@@ -1,0 +1,16 @@
+{
+	"group": "WHERE",
+	"name": "=",
+	"sql": "{col} = {value}",
+	"vars": {
+		"col": {
+			"select": "column",
+			"description": "column to compare"
+		},
+		"value": {
+			"select": "value",
+			"use": "col",
+			"description": "value it has to equal"
+		}
+	}
+}

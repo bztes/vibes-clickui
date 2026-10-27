@@ -1,0 +1,12 @@
+{
+	"group": "SELECT",
+	"name": "median",
+	"sql": "median({col})",
+	"vars": {
+		"col": {
+			"select": "column",
+			"type": "number",
+			"description": "number to take the median of"
+		}
+	}
+}

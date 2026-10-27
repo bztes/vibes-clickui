@@ -1,0 +1,13 @@
+{
+	"name": "Empty panel",
+	"description": "Write your own query",
+	"panel": {
+		"type": ["timeseries", "bar", "stat", "gauge", "table", "pie", "logs", "text"],
+		"gridPos": {
+			"x": 0,
+			"y": 0,
+			"w": 12,
+			"h": 8
+		}
+	}
+}

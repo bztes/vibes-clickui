@@ -1,0 +1,12 @@
+{
+	"group": "SELECT",
+	"name": "groupUniqArrayArray",
+	"sql": "groupUniqArrayArray({col})",
+	"vars": {
+		"col": {
+			"select": "column",
+			"type": "array",
+			"description": "arrays merged, without duplicates"
+		}
+	}
+}

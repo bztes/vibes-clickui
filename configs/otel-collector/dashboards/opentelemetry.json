@@ -1,0 +1,211 @@
+{
+	"title": "OTel Collector Ingest",
+	"description": "What the collector writes to ClickHouse: volume per signal and service, storage.",
+	"tags": ["otel", "ingest"],
+	"model": {
+		"time": {
+			"from": "now-1h",
+			"to": "now"
+		},
+		"refresh": "30s",
+		"variables": [],
+		"panels": [
+			{
+				"id": "span-rate",
+				"type": "stat",
+				"title": "Spans / s",
+				"gridPos": {
+					"x": 0,
+					"y": 0,
+					"w": 6,
+					"h": 4
+				},
+				"sql": "SELECT $__timeInterval(Timestamp) AS time, count() / $__interval_s AS spans\nFROM otel_traces WHERE $__timeFilter(Timestamp)\nGROUP BY time ORDER BY time",
+				"field": {
+					"unit": "ops",
+					"thresholds": [
+						{
+							"value": null,
+							"color": "blue"
+						}
+					]
+				},
+				"options": {
+					"reduce": "mean"
+				}
+			},
+			{
+				"id": "log-rate",
+				"type": "stat",
+				"title": "Logs / s",
+				"gridPos": {
+					"x": 6,
+					"y": 0,
+					"w": 6,
+					"h": 4
+				},
+				"sql": "SELECT $__timeInterval(Timestamp) AS time, count() / $__interval_s AS logs\nFROM otel_logs WHERE $__timeFilter(Timestamp)\nGROUP BY time ORDER BY time",
+				"field": {
+					"unit": "ops",
+					"thresholds": [
+						{
+							"value": null,
+							"color": "blue"
+						}
+					]
+				},
+				"options": {
+					"reduce": "mean"
+				}
+			},
+			{
+				"id": "point-rate",
+				"type": "stat",
+				"title": "Metric points / s",
+				"gridPos": {
+					"x": 12,
+					"y": 0,
+					"w": 6,
+					"h": 4
+				},
+				"sql": "SELECT $__timeInterval(ts) AS time, count() / $__interval_s AS points\nFROM (SELECT 'spans' AS signal, ServiceName, Timestamp AS ts FROM otel_traces WHERE $__timeFilter(Timestamp)\n  UNION ALL SELECT 'logs', ServiceName, Timestamp FROM otel_logs WHERE $__timeFilter(Timestamp)\n  UNION ALL SELECT 'metric points', ServiceName, TimeUnix FROM otel_metrics_gauge WHERE $__timeFilter(TimeUnix)\n  UNION ALL SELECT 'metric points', ServiceName, TimeUnix FROM otel_metrics_sum WHERE $__timeFilter(TimeUnix)\n  UNION ALL SELECT 'metric points', ServiceName, TimeUnix FROM otel_metrics_histogram WHERE $__timeFilter(TimeUnix)) WHERE signal = 'metric points'\nGROUP BY time ORDER BY time",
+				"field": {
+					"unit": "ops",
+					"thresholds": [
+						{
+							"value": null,
+							"color": "blue"
+						}
+					]
+				},
+				"options": {
+					"reduce": "mean"
+				}
+			},
+			{
+				"id": "services",
+				"type": "stat",
+				"title": "Reporting services",
+				"gridPos": {
+					"x": 18,
+					"y": 0,
+					"w": 6,
+					"h": 4
+				},
+				"sql": "SELECT $__timeInterval(ts) AS time, uniqExact(ServiceName) AS services\nFROM (SELECT 'spans' AS signal, ServiceName, Timestamp AS ts FROM otel_traces WHERE $__timeFilter(Timestamp)\n  UNION ALL SELECT 'logs', ServiceName, Timestamp FROM otel_logs WHERE $__timeFilter(Timestamp)\n  UNION ALL SELECT 'metric points', ServiceName, TimeUnix FROM otel_metrics_gauge WHERE $__timeFilter(TimeUnix)\n  UNION ALL SELECT 'metric points', ServiceName, TimeUnix FROM otel_metrics_sum WHERE $__timeFilter(TimeUnix)\n  UNION ALL SELECT 'metric points', ServiceName, TimeUnix FROM otel_metrics_histogram WHERE $__timeFilter(TimeUnix)) WHERE ServiceName != ''\nGROUP BY time ORDER BY time",
+				"field": {
+					"unit": "short",
+					"thresholds": [
+						{
+							"value": null,
+							"color": "blue"
+						}
+					]
+				},
+				"options": {
+					"reduce": "last"
+				}
+			},
+			{
+				"id": "volume-by-signal",
+				"type": "timeseries",
+				"title": "Ingest rate by signal",
+				"gridPos": {
+					"x": 0,
+					"y": 4,
+					"w": 12,
+					"h": 8
+				},
+				"sql": "SELECT $__timeInterval(ts) AS time, signal, count() / $__interval_s AS rate\nFROM (SELECT 'spans' AS signal, ServiceName, Timestamp AS ts FROM otel_traces WHERE $__timeFilter(Timestamp)\n  UNION ALL SELECT 'logs', ServiceName, Timestamp FROM otel_logs WHERE $__timeFilter(Timestamp)\n  UNION ALL SELECT 'metric points', ServiceName, TimeUnix FROM otel_metrics_gauge WHERE $__timeFilter(TimeUnix)\n  UNION ALL SELECT 'metric points', ServiceName, TimeUnix FROM otel_metrics_sum WHERE $__timeFilter(TimeUnix)\n  UNION ALL SELECT 'metric points', ServiceName, TimeUnix FROM otel_metrics_histogram WHERE $__timeFilter(TimeUnix))\nGROUP BY time, signal ORDER BY time",
+				"field": {
+					"unit": "ops"
+				},
+				"options": {
+					"colorBy": "signal"
+				}
+			},
+			{
+				"id": "volume-by-service",
+				"type": "timeseries",
+				"title": "Ingest rate by service",
+				"gridPos": {
+					"x": 12,
+					"y": 4,
+					"w": 12,
+					"h": 8
+				},
+				"sql": "SELECT $__timeInterval(ts) AS time, if(ServiceName = '', 'collector (host)', ServiceName) AS service,\n  count() / $__interval_s AS rate\nFROM (SELECT 'spans' AS signal, ServiceName, Timestamp AS ts FROM otel_traces WHERE $__timeFilter(Timestamp)\n  UNION ALL SELECT 'logs', ServiceName, Timestamp FROM otel_logs WHERE $__timeFilter(Timestamp)\n  UNION ALL SELECT 'metric points', ServiceName, TimeUnix FROM otel_metrics_gauge WHERE $__timeFilter(TimeUnix)\n  UNION ALL SELECT 'metric points', ServiceName, TimeUnix FROM otel_metrics_sum WHERE $__timeFilter(TimeUnix)\n  UNION ALL SELECT 'metric points', ServiceName, TimeUnix FROM otel_metrics_histogram WHERE $__timeFilter(TimeUnix))\nGROUP BY time, service ORDER BY time",
+				"field": {
+					"unit": "ops"
+				},
+				"options": {
+					"stacking": true,
+					"fillOpacity": 60,
+					"colorBy": "service"
+				}
+			},
+			{
+				"id": "service-inventory",
+				"type": "table",
+				"title": "Services",
+				"description": "Telemetry each service sent in the selected range",
+				"gridPos": {
+					"x": 0,
+					"y": 12,
+					"w": 16,
+					"h": 9
+				},
+				"sql": "SELECT if(ServiceName = '', 'collector (host)', ServiceName) AS service,\n  countIf(signal = 'spans') AS spans,\n  countIf(signal = 'logs') AS logs,\n  countIf(signal = 'metric points') AS metric_points,\n  max(ts) AS last_seen\nFROM (SELECT 'spans' AS signal, ServiceName, Timestamp AS ts FROM otel_traces WHERE $__timeFilter(Timestamp)\n  UNION ALL SELECT 'logs', ServiceName, Timestamp FROM otel_logs WHERE $__timeFilter(Timestamp)\n  UNION ALL SELECT 'metric points', ServiceName, TimeUnix FROM otel_metrics_gauge WHERE $__timeFilter(TimeUnix)\n  UNION ALL SELECT 'metric points', ServiceName, TimeUnix FROM otel_metrics_sum WHERE $__timeFilter(TimeUnix)\n  UNION ALL SELECT 'metric points', ServiceName, TimeUnix FROM otel_metrics_histogram WHERE $__timeFilter(TimeUnix))\nGROUP BY service ORDER BY last_seen DESC"
+			},
+			{
+				"id": "sdk-languages",
+				"type": "pie",
+				"title": "Spans by SDK language",
+				"gridPos": {
+					"x": 16,
+					"y": 12,
+					"w": 8,
+					"h": 9
+				},
+				"sql": "SELECT ResourceAttributes['telemetry.sdk.language'] AS language, count() AS spans\nFROM otel_traces\nWHERE $__timeFilter(Timestamp) AND language != ''\nGROUP BY language ORDER BY spans DESC",
+				"field": {
+					"unit": "short"
+				},
+				"options": {
+					"colorBy": "language"
+				}
+			},
+			{
+				"id": "storage",
+				"type": "table",
+				"title": "Storage per table",
+				"description": "Active parts of the otel_* tables, independent of the time range",
+				"gridPos": {
+					"x": 0,
+					"y": 21,
+					"w": 14,
+					"h": 8
+				},
+				"sql": "SELECT table, sum(rows) AS rows,\n  formatReadableSize(sum(data_compressed_bytes)) AS compressed,\n  formatReadableSize(sum(data_uncompressed_bytes)) AS uncompressed,\n  round(sum(data_uncompressed_bytes) / greatest(sum(data_compressed_bytes), 1), 1) AS ratio\nFROM system.parts\nWHERE active AND database = currentDatabase() AND table LIKE 'otel\\_%'\nGROUP BY table ORDER BY sum(data_compressed_bytes) DESC"
+			},
+			{
+				"id": "storage-share",
+				"type": "bar",
+				"title": "Compressed size per table",
+				"gridPos": {
+					"x": 14,
+					"y": 21,
+					"w": 10,
+					"h": 8
+				},
+				"sql": "SELECT table, sum(data_compressed_bytes) AS bytes\nFROM system.parts\nWHERE active AND database = currentDatabase() AND table LIKE 'otel\\_%'\nGROUP BY table ORDER BY bytes DESC",
+				"field": {
+					"unit": "bytes"
+				},
+				"options": {
+					"colorBy": "table"
+				}
+			}
+		]
+	}
+}

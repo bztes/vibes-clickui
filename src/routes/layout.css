@@ -1,0 +1,116 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* Semantic tokens. Values live on :root so light/dark swap in one place. */
+@theme inline {
+	--font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+	--font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+	--color-bg: var(--bg);
+	--color-surface: var(--surface);
+	--color-surface-2: var(--surface-2);
+	--color-surface-3: var(--surface-3);
+	--color-line: var(--line);
+	--color-line-strong: var(--line-strong);
+	--color-fg: var(--fg);
+	--color-fg-2: var(--fg-2);
+	--color-muted: var(--muted);
+	--color-accent: var(--accent);
+	--color-accent-fg: var(--accent-fg);
+
+	--color-good: var(--good);
+	--color-warning: var(--warning);
+	--color-serious: var(--serious);
+	--color-critical: var(--critical);
+	--color-blue: var(--series-1);
+	--color-violet: var(--series-7);
+}
+
+:root {
+	color-scheme: light;
+	--bg: #f3f3f1;
+	--surface: #fcfcfb;
+	--surface-2: #f0efec;
+	--surface-3: #e6e5e1;
+	--line: #e2e1dc;
+	--line-strong: #cfcec8;
+	--fg: #0b0b0b;
+	--fg-2: #52514e;
+	--muted: #77766f;
+	--accent: #2a78d6;
+	--accent-fg: #ffffff;
+
+	/* status (fixed in both modes; always paired with icon/label) */
+	--good: #0ca30c;
+	--warning: #fab219;
+	--serious: #ec835a;
+	--critical: #d03b3b;
+
+	/* categorical series, fixed order (validated palette) */
+	--series-1: #2a78d6;
+	--series-2: #eb6834;
+	--series-3: #1baf7a;
+	--series-4: #eda100;
+	--series-5: #e87ba4;
+	--series-6: #008300;
+	--series-7: #6250d6;
+	--series-8: #e34948;
+
+	--grid: rgb(0 0 0 / 0.07);
+}
+
+:root[data-theme='dark'] {
+	color-scheme: dark;
+	--bg: #111110;
+	--surface: #1a1a19;
+	--surface-2: #222220;
+	--surface-3: #2c2c2a;
+	--line: #2e2e2b;
+	--line-strong: #403f3b;
+	--fg: #f0efec;
+	--fg-2: #c3c2b7;
+	--muted: #8f8e86;
+	--accent: #3987e5;
+	--accent-fg: #ffffff;
+
+	--series-1: #3987e5;
+	--series-2: #d95926;
+	--series-3: #199e70;
+	--series-4: #c98500;
+	--series-5: #d55181;
+	--series-6: #008300;
+	--series-7: #9085e9;
+	--series-8: #e66767;
+
+	--grid: rgb(255 255 255 / 0.07);
+}
+
+html,
+body {
+	background: var(--bg);
+	color: var(--fg);
+}
+
+body {
+	font-family: var(--font-sans);
+	font-size: 14px;
+	-webkit-font-smoothing: antialiased;
+}
+
+::selection {
+	background: color-mix(in oklab, var(--accent) 30%, transparent);
+}
+
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--line-strong) transparent;
+}
+
+/* uPlot */
+.uplot {
+	font-family: var(--font-sans);
+}
+.u-select {
+	background: color-mix(in oklab, var(--accent) 18%, transparent);
+}

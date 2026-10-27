@@ -1,0 +1,17 @@
+{
+	"group": "WHERE",
+	"name": "not has",
+	"sql": "NOT has({col}, {value})",
+	"vars": {
+		"col": {
+			"select": "column",
+			"type": "array",
+			"description": "array to look in"
+		},
+		"value": {
+			"select": "value",
+			"use": "col",
+			"description": "element it must not contain"
+		}
+	}
+}

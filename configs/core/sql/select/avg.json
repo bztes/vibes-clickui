@@ -1,0 +1,12 @@
+{
+	"group": "SELECT",
+	"name": "avg",
+	"sql": "avg({col})",
+	"vars": {
+		"col": {
+			"select": "column",
+			"type": "number",
+			"description": "number to average"
+		}
+	}
+}

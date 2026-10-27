@@ -1,0 +1,265 @@
+{
+	"title": "Demo",
+	"description": "Request rate, errors and latency (RED) from traces, plus logs.",
+	"tags": ["traces", "logs", "red"],
+	"model": {
+		"time": {
+			"from": "now-1h",
+			"to": "now"
+		},
+		"refresh": "30s",
+		"variables": [
+			{
+				"name": "service",
+				"label": "Service",
+				"type": "query",
+				"query": "SELECT DISTINCT ServiceName FROM otel_traces\nWHERE $__timeFilter(Timestamp)\nORDER BY ServiceName",
+				"multi": true,
+				"includeAll": true
+			}
+		],
+		"panels": [
+			{
+				"id": "rps",
+				"type": "stat",
+				"title": "Request rate",
+				"gridPos": {
+					"x": 0,
+					"y": 0,
+					"w": 6,
+					"h": 4
+				},
+				"sql": "SELECT $__timeInterval(Timestamp) AS time, count() / $__interval_s AS rps\nFROM otel_traces\nWHERE $__timeFilter(Timestamp) AND SpanKind = 'Server' AND ServiceName IN (${service})\nGROUP BY time ORDER BY time",
+				"field": {
+					"unit": "reqps",
+					"thresholds": [
+						{
+							"value": null,
+							"color": "blue"
+						}
+					]
+				},
+				"options": {
+					"reduce": "mean"
+				}
+			},
+			{
+				"id": "errors",
+				"type": "stat",
+				"title": "Error rate",
+				"gridPos": {
+					"x": 6,
+					"y": 0,
+					"w": 6,
+					"h": 4
+				},
+				"sql": "SELECT $__timeInterval(Timestamp) AS time,\n  countIf(StatusCode = 'Error') / count() * 100 AS error_rate\nFROM otel_traces\nWHERE $__timeFilter(Timestamp) AND SpanKind = 'Server' AND ServiceName IN (${service})\nGROUP BY time ORDER BY time",
+				"field": {
+					"unit": "percent",
+					"decimals": 2,
+					"thresholds": [
+						{
+							"value": null,
+							"color": "good"
+						},
+						{
+							"value": 1,
+							"color": "warning"
+						},
+						{
+							"value": 5,
+							"color": "critical"
+						}
+					]
+				},
+				"options": {
+					"reduce": "mean"
+				}
+			},
+			{
+				"id": "p95",
+				"type": "stat",
+				"title": "p95 latency",
+				"gridPos": {
+					"x": 12,
+					"y": 0,
+					"w": 6,
+					"h": 4
+				},
+				"sql": "SELECT $__timeInterval(Timestamp) AS time, quantile(0.95)(Duration) / 1e6 AS p95\nFROM otel_traces\nWHERE $__timeFilter(Timestamp) AND SpanKind = 'Server' AND ServiceName IN (${service})\nGROUP BY time ORDER BY time",
+				"field": {
+					"unit": "ms",
+					"thresholds": [
+						{
+							"value": null,
+							"color": "good"
+						},
+						{
+							"value": 250,
+							"color": "warning"
+						},
+						{
+							"value": 500,
+							"color": "critical"
+						}
+					]
+				},
+				"options": {
+					"reduce": "mean"
+				}
+			},
+			{
+				"id": "log-errors",
+				"type": "stat",
+				"title": "Error logs",
+				"gridPos": {
+					"x": 18,
+					"y": 0,
+					"w": 6,
+					"h": 4
+				},
+				"sql": "SELECT $__timeInterval(Timestamp) AS time, count() AS errors\nFROM otel_logs\nWHERE $__timeFilter(Timestamp) AND SeverityNumber >= 17 AND ServiceName IN (${service})\nGROUP BY time ORDER BY time WITH FILL STEP toIntervalSecond($__interval_s)",
+				"field": {
+					"unit": "short",
+					"thresholds": [
+						{
+							"value": null,
+							"color": "good"
+						},
+						{
+							"value": 1,
+							"color": "warning"
+						},
+						{
+							"value": 50,
+							"color": "critical"
+						}
+					]
+				},
+				"options": {
+					"reduce": "sum"
+				}
+			},
+			{
+				"id": "rps-by-service",
+				"type": "timeseries",
+				"title": "Requests per second by service",
+				"gridPos": {
+					"x": 0,
+					"y": 4,
+					"w": 12,
+					"h": 8
+				},
+				"sql": "SELECT $__timeInterval(Timestamp) AS time, ServiceName, count() / $__interval_s AS rps\nFROM otel_traces\nWHERE $__timeFilter(Timestamp) AND SpanKind = 'Server' AND ServiceName IN (${service})\nGROUP BY time, ServiceName ORDER BY time",
+				"field": {
+					"unit": "reqps"
+				},
+				"options": {
+					"colorBy": "ServiceName"
+				}
+			},
+			{
+				"id": "latency",
+				"type": "timeseries",
+				"title": "Server latency",
+				"description": "Latency percentiles of server spans",
+				"gridPos": {
+					"x": 12,
+					"y": 4,
+					"w": 12,
+					"h": 8
+				},
+				"sql": "SELECT $__timeInterval(Timestamp) AS time,\n  quantile(0.5)(Duration) / 1e6 AS p50,\n  quantile(0.95)(Duration) / 1e6 AS p95,\n  quantile(0.99)(Duration) / 1e6 AS p99\nFROM otel_traces\nWHERE $__timeFilter(Timestamp) AND SpanKind = 'Server' AND ServiceName IN (${service})\nGROUP BY time ORDER BY time",
+				"field": {
+					"unit": "ms"
+				}
+			},
+			{
+				"id": "error-rate-by-service",
+				"type": "timeseries",
+				"title": "Errors by service",
+				"gridPos": {
+					"x": 0,
+					"y": 12,
+					"w": 12,
+					"h": 8
+				},
+				"sql": "SELECT $__timeInterval(Timestamp) AS time, ServiceName, countIf(StatusCode = 'Error') AS errors\nFROM otel_traces\nWHERE $__timeFilter(Timestamp) AND ServiceName IN (${service})\nGROUP BY time, ServiceName ORDER BY time",
+				"field": {
+					"unit": "short"
+				},
+				"options": {
+					"drawStyle": "bars",
+					"fillOpacity": 80,
+					"stacking": true,
+					"colorBy": "ServiceName"
+				}
+			},
+			{
+				"id": "logs-by-severity",
+				"type": "timeseries",
+				"title": "Log volume by severity",
+				"gridPos": {
+					"x": 12,
+					"y": 12,
+					"w": 12,
+					"h": 8
+				},
+				"sql": "SELECT $__timeInterval(Timestamp) AS time, SeverityText, count() AS logs\nFROM otel_logs\nWHERE $__timeFilter(Timestamp) AND ServiceName IN (${service})\nGROUP BY time, SeverityText ORDER BY time",
+				"field": {
+					"unit": "short"
+				},
+				"options": {
+					"drawStyle": "bars",
+					"fillOpacity": 80,
+					"stacking": true,
+					"colorBy": "SeverityText"
+				}
+			},
+			{
+				"id": "top-operations",
+				"type": "table",
+				"title": "Top operations",
+				"gridPos": {
+					"x": 0,
+					"y": 20,
+					"w": 14,
+					"h": 9
+				},
+				"sql": "SELECT ServiceName AS service, SpanName AS operation, count() AS requests,\n  round(countIf(StatusCode = 'Error') / count() * 100, 2) AS error_pct,\n  round(quantile(0.5)(Duration) / 1e6, 2) AS p50_ms,\n  round(quantile(0.95)(Duration) / 1e6, 2) AS p95_ms\nFROM otel_traces\nWHERE $__timeFilter(Timestamp) AND SpanKind = 'Server' AND ServiceName IN (${service})\nGROUP BY service, operation\nORDER BY requests DESC\nLIMIT 50"
+			},
+			{
+				"id": "slowest-routes",
+				"type": "bar",
+				"title": "Slowest operations (p95)",
+				"gridPos": {
+					"x": 14,
+					"y": 20,
+					"w": 10,
+					"h": 9
+				},
+				"sql": "SELECT concat(ServiceName, ' ', SpanName) AS operation, quantile(0.95)(Duration) / 1e6 AS p95\nFROM otel_traces\nWHERE $__timeFilter(Timestamp) AND SpanKind = 'Server' AND ServiceName IN (${service})\nGROUP BY operation ORDER BY p95 DESC LIMIT 10",
+				"field": {
+					"unit": "ms"
+				}
+			},
+			{
+				"id": "recent-problems",
+				"type": "logs",
+				"title": "Recent warnings and errors",
+				"gridPos": {
+					"x": 0,
+					"y": 29,
+					"w": 24,
+					"h": 10
+				},
+				"sql": "SELECT Timestamp, SeverityText, ServiceName, Body, TraceId\nFROM otel_logs\nWHERE $__timeFilter(Timestamp) AND SeverityNumber >= 13 AND ServiceName IN (${service})\nORDER BY Timestamp DESC\nLIMIT 200",
+				"options": {
+					"levelColumn": "SeverityText",
+					"labelColumn": "ServiceName",
+					"messageColumn": "Body"
+				}
+			}
+		]
+	}
+}

@@ -1,0 +1,13 @@
+{
+	"group": "WHERE",
+	"name": "time range",
+	"description": "$__timeFilter",
+	"sql": "$__timeFilter({col})",
+	"vars": {
+		"col": {
+			"select": "column",
+			"type": "time",
+			"description": "time column limited to the dashboard range"
+		}
+	}
+}

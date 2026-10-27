@@ -1,0 +1,6 @@
+{
+	"group": "Macro",
+	"name": "$__conditionalAll(cond, $var)",
+	"description": "1=1 when $var is All",
+	"sql": "$__conditionalAll(cond, $var)"
+}

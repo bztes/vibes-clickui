@@ -1,0 +1,6 @@
+{
+	"group": "Macro",
+	"name": "$__toTime",
+	"description": "range end as DateTime64",
+	"sql": "$__toTime"
+}
