@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 FROM node:24-alpine AS base
-RUN npm install -g pnpm@12.14.0
+RUN npm install -g pnpm@12.15.0
 WORKDIR /app
 
 FROM base AS build
