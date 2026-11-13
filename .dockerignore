@@ -8,8 +8,7 @@ build
 .git
 .vscode
 .claude
-docker
-compose*.yaml
+telemetry
 docker-compose.yaml
 Dockerfile
 data

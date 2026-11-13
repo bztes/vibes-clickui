@@ -22,7 +22,8 @@ Requires Node 24 and pnpm.
 
 ```sh
 pnpm install
-docker compose -f compose.telemetry.yaml -f compose.demo.yaml up -d
+cp telemetry/.env.example telemetry/.env   # fill in the passwords and OTLP token
+docker compose -f telemetry/compose.yaml up -d
 pnpm dev   # http://localhost:5173, data source URL http://localhost:8123
 ```
 
